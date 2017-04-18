@@ -1,0 +1,17 @@
+galaxy_info:
+  author:
+    - U.S. National Library of Medicine (NLM-OCCS)
+  description: Install the Splunk Forwarder without configuration
+  company: U.S. National Library of Medicine (NLM)
+  license: MIT
+  min_ansible_version: 2.0
+  platforms:
+    - name: EL
+      versions:
+        - 6
+        - 7
+  galaxy_tags:  
+    - splunk
+    - splunkforwarder
+
+dependencies: []

@@ -1,0 +1,81 @@
+---
+- name: Create Splunk group
+  group:
+    name: "{{ splunk_forwarder_group }}"
+    state: present
+  tags: splunk_user
+
+- name: Create Splunk user
+  user:
+    name: "{{ splunk_forwarder_user }}"
+    group: "{{ splunk_forwarder_group }}"
+    state: present
+    create_home: no
+    system: yes
+  tags: splunk_user
+
+- name: Check if the packages has already been downlaoded
+  stat: 
+    path: /tmp/{{ splunk_forwarder_rpm }}
+
+- name: Get the RPM
+  get_url:
+    url: "{{ splunk_forwarder_rpm_url }}"
+    dest: "/tmp/{{ splunk_forwarder_rpm }}"
+  tags: install_splunk
+  when: ansible_os_family == "RedHat" 
+
+- name: Install Splunk
+  yum:
+    name: "/tmp/{{ splunk_forwarder_rpm }}"
+    state: present
+  tags:
+    - splunkforwarder
+    - install
+  when: ansible_os_family == "RedHat" 
+
+- name: Copy inputs file
+  template:
+    src: inputs.conf.j2
+    dest: /opt/splunkforwarder/etc/system/local/inputs.conf
+    backup: yes
+  tags:
+    - splunkforwarder
+    - config
+  when: ansible_os_family == "RedHat" 
+
+- name: Copy outputs file
+  template:
+    src: outputs.conf.j2
+    dest: /opt/splunkforwarder/etc/system/local/outputs.conf
+    backup: yes
+  tags:
+    - splunkforwarder
+    - config
+
+- name: Upload Splunk startup script
+  copy:
+    src: splunk
+    dest: /etc/init.d/splunk
+    owner: 0
+    group: 0
+    mode: 0755
+  tags:
+    - splunkforwarder
+    - startup
+  notify: Enable Splunk Forwarder
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version <= "6"
+
+- name: Upload Splunk Systemd Script
+  copy:
+    src: splunk.service
+    dest: /usr/lib/systemd/system/splunk.service
+    owner: 0
+    group: 0
+    mode: 0755
+  tags:
+    - splunkforwarder
+    - startup
+  notify: Enable Splunk Forwarder
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= "7"
+
