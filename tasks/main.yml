@@ -3,27 +3,32 @@
   group:
     name: "{{ splunk_forwarder_group }}"
     state: present
-  tags: splunk_user
+  tags:
+    - splunkforwarder
+    - install
 
 - name: Create Splunk user
   user:
     name: "{{ splunk_forwarder_user }}"
     group: "{{ splunk_forwarder_group }}"
+    comment: Splunk Forwarder
     state: present
-    create_home: no
+    createhome: no
+    shell: /sbin/nologin
     system: yes
-  tags: splunk_user
-
-- name: Check if the packages has already been downlaoded
-  stat: 
-    path: /tmp/{{ splunk_forwarder_rpm }}
+  tags:
+    - splunkforwarder
+    - install
 
 - name: Get the RPM
   get_url:
     url: "{{ splunk_forwarder_rpm_url }}"
+    checksum: "{{ splunk_forwarder_sum }}"
     dest: "/tmp/{{ splunk_forwarder_rpm }}"
-  tags: install_splunk
-  when: ansible_os_family == "RedHat" 
+  tags:
+    - splunkforwarder
+    - install
+  when: ansible_os_family == "RedHat"
 
 - name: Install Splunk
   yum:
@@ -32,9 +37,9 @@
   tags:
     - splunkforwarder
     - install
-  when: ansible_os_family == "RedHat" 
+  when: ansible_os_family == "RedHat"
 
-- name: Copy inputs file
+- name: Configure inputs
   template:
     src: inputs.conf.j2
     dest: /opt/splunkforwarder/etc/system/local/inputs.conf
@@ -42,9 +47,8 @@
   tags:
     - splunkforwarder
     - config
-  when: ansible_os_family == "RedHat" 
 
-- name: Copy outputs file
+- name: Configure outputs
   template:
     src: outputs.conf.j2
     dest: /opt/splunkforwarder/etc/system/local/outputs.conf

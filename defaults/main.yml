@@ -2,11 +2,17 @@
 splunk_forwarder_user: "splunk"
 splunk_forwarder_group: "splunk"
 splunk_forwarder_rpm: "splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm"
+splunk_forwarder_sum: 'sha256:a881e3f7759e9996252b7e2f3e33b42f6017e8765774ba637144e745dc9a64eb'
 splunk_forwarder_rpm_url: "https://download.splunk.com/products/universalforwarder/releases/6.5.0/linux/splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm"
-splunk_config: False
 
-splunk_forwarder_indexer: "splunk-indexer:9997"
-splunk_forwarder_index: "default"
+splunk_forwarder_config: False
 
+splunk_forwarder_user: admin
+splunk_forwarder_pass: changeme
 
+splunk_forwarder_index: default
+splunk_forwarder_logs: []
 
+splunk_forwarder_verbatim: ''
+
+splunk_forwarder_indexer: localhost
